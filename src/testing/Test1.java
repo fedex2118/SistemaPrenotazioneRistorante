@@ -26,7 +26,7 @@ public class Test1 {
 		
 		ArrayList<Tavolo> tavoli = new ArrayList<>();
 		
-		tavoli.addAll(List.of(tavolo1, tavolo1, tavolo2, tavolo3, tavolo4, tavolo5,
+		tavoli.addAll(List.of(tavolo1, tavolo2, tavolo3, tavolo4, tavolo5,
 				tavolo6, tavolo7, tavolo8, tavolo9, tavolo10));
 		
 		ristorante.setTavoli(tavoli);

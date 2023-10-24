@@ -9,15 +9,26 @@ public class Prenotazione {
 	private String orario;
 	private int numeroPersone;
 	
-	private int idTavolo;
+	private Tavolo tavolo;
 
-	public Prenotazione(int id, String data, String orario, int numeroPersone, int idTavolo) {
+	// Costruttori
+	public Prenotazione(int id, String data, String orario, int numeroPersone, Tavolo tavolo) {
 		this.id = id;
 		this.data = data;
 		this.orario = orario;
 		this.numeroPersone = numeroPersone;
+		this.tavolo = tavolo;
+	}
+	
+	public Prenotazione(String data, String orario, int numeroPersone, Tavolo tavolo) {
+		this.data = data;
+		this.orario = orario;
+		this.numeroPersone = numeroPersone;
+		this.tavolo = tavolo;
 	}
 
+	
+	// Getters & Setters
 	public int getId() {
 		return id;
 	}
@@ -50,12 +61,12 @@ public class Prenotazione {
 		this.numeroPersone = numeroPersone;
 	}
 
-	public int getIdTavolo() {
-		return idTavolo;
+	public Tavolo getTavolo() {
+		return tavolo;
 	}
 
-	public void setIdTavolo(int idTavolo) {
-		this.idTavolo = idTavolo;
+	public void setTavolo(Tavolo tavolo) {
+		this.tavolo = tavolo;
 	}
 	
 	

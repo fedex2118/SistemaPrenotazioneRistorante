@@ -12,6 +12,7 @@ import service.PrenotazioneService;
 public class Ristorante implements PrenotazioneService {
 
 	public ArrayList<Tavolo> tavoli = new ArrayList<>();
+	public ArrayList<Tavolo> tavoliDisponibili = new ArrayList<>();
 
 	// key tavoloID: [p1, p2, p3]
 	public HashMap<Integer, ArrayList<Prenotazione>> prenotazioni = new HashMap<>();
@@ -24,7 +25,7 @@ public class Ristorante implements PrenotazioneService {
 	}
 
 	/**
-	 * Metodo per rimuovere tavoli che si basa sulla chiave dei tavoli (id).
+	 * Metodo per rimuovere tavoli che si basa sull'id dei tavoli.
 	 * 
 	 * @param id
 	 */
@@ -35,113 +36,106 @@ public class Ristorante implements PrenotazioneService {
 		}
 	}
 
-	/**
-	 * Metodo che aggiorna l'ArrayList delle prenotazioni effettuate.
-	 */
-	public void aggiornaPrenotazioni(int idTavolo) {
-//		ArrayList<Prenotazione> prenotazioniTavolo = new ArrayList<>;
-//		for(Prenotazione prenotazione : prenotazioni) {
-//			if(prenotazione.getIdTavolo() == idTavolo)
-//		}
-//		prenotazioni.add(p);
+	@Override
+	public void prenotaTavolo(Tavolo t, String data, String orario, int numeroPersone) {
+		// verificare la disponibilita
+		verificaDisponibilitàTavolo(data, orario, numeroPersone);
+		// mostra i tavoli disponibili
+		getTavoliDisponibili();
+		
+		// adesso puoi scegliere un tavolo tra questi
+		
+		// utente sceglie e se è errato si riprova
+		
+		// se è corretto si aggiunge quel tavolo alle prenotazioni possibili
+		int key = t.getId();
+		
+		ArrayList<Prenotazione> prenotazioniTavolo = prenotazioni.get(key);
+		
+		// crea una nuova prenotazione
+		
+		Prenotazione p = new Prenotazione(data, orario, numeroPersone, t);
+		
+		if(prenotazioniTavolo == null) { // chiave mai inserita prima
+			prenotazioniTavolo = new ArrayList<>();
+		}
+		prenotazioniTavolo.add(p);
+		prenotazioni.put(key, prenotazioniTavolo); // aggiungo alle prenotazioni
 	}
 
 	@Override
-	public void prenotaTavolo() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void annullaPrenotazione() {
-		// TODO Auto-generated method stub
-
+	public void annullaPrenotazione(Prenotazione p) {
+		int key = p.getTavolo().getId();
+		
+		ArrayList<Prenotazione> prenotazioniTavolo = prenotazioni.get(key);
+		
+		prenotazioniTavolo.remove(p);
+		
+		prenotazioni.put(key, prenotazioniTavolo);
 	}
 
 	@Override
 	public ArrayList<Tavolo> getTavoliDisponibili() {
-		// la data oppure la data corrente
-		// l'orario della prenotazione
-		// se è disponibile
-		return null;
+		return tavoliDisponibili;
 	}
 
-	public void verificaDisponibilitàTavolo(String data, String orario, int numeroPersone) {
+	/**
+	 * Metodo che controlla se il tavolo per una data, orario e numero persone è disponibile
+	 * @param data
+	 * @param orario
+	 * @param numeroPersone
+	 */
+	private void verificaDisponibilitàTavolo(String data, String orario, int numeroPersone) {
 		if (prenotazioni.isEmpty()) {
 			// sono disponibili tutti i tavoli!
 		}
 		HashSet<Integer> idTavoliDisponibili = new HashSet<>();
-		
-//		ArrayList<Integer> checkDisponibilita = new ArrayList<>();
-		
-		for(int tavoloId : prenotazioni.keySet()) {
-			for(Prenotazione p : prenotazioni.get(tavoloId)) {
-				if(p.getData().equals(data)) {
-					if(p.getOrario().equals(orario)) {
-//						checkDisponibilita = false;
+
+		for (int tavoloId : prenotazioni.keySet()) {
+			ArrayList<Integer> checkDisponibilita = new ArrayList<>();
+
+			for (Prenotazione p : prenotazioni.get(tavoloId)) {
+				if (p.getData().equals(data)) { // data uguale
+					if (p.getOrario().equals(orario)) { // data uguale, orario uguale
+						checkDisponibilita.add(0);
+					} else if (p.getTavolo().getNumeroPosti() >= numeroPersone) { // data uguale, orario diverso
+						checkDisponibilita.add(1);
+					} else { // data uguale, orario diverso e non ha numero posti possibile
+						checkDisponibilita.add(0);
 					}
-					else if(p.getNumeroPersone() >= numeroPersone) {
-//						checkDisponibilita = true;
-					}
+				} else { // data diversa
+					checkDisponibilita.add(1);
 				}
+			}
+			// alla fine se sono tutti 1, va tutto bene
+			// se c'è anche un solo 0 non è possibile prenotare
+
+			boolean tavoloDisponibile = true;
+
+			for (int i : checkDisponibilita) {
+				if (i == 0) {
+					// NON E' DISPONIBILE
+					tavoloDisponibile = false;
+				}
+			}
+			if (tavoloDisponibile) {
+				idTavoliDisponibili.add(tavoloId);
 			}
 		}
 
-//		for (Tavolo tavolo : tavoli) { // tutti i tavoli disponibili
-//			idTavoliDisponibili.add(tavolo.getId());
-//		}
-
-		// prima di tutto prendo solo i tavoli che hanno il numero di persone corretto.
-//		for (Tavolo tavolo : tavoli) { // se il tavolo ha effettivamente posto per quelle persone
-//			if (tavolo.getNumeroPosti() >= numeroPersone) {
-//				idTavoliDisponibili.add(tavolo.getId());
-//			}
-//		}
-
-		// check data, orario, numeroPersone
-//		for (Prenotazione p : prenotazioni) {
-//			if (p.getData().equals(data)) { // stessa data
-//				if (p.getOrario().equals(orario)) { // stesso orario
-//					if(idTavoliDisponibili.contains(p.getIdTavolo()))
-//						idTavoliDisponibili.remove(p.getId());
-//				} else if (p.getNumeroPersone() >= numeroPersone) { // non nello stesso orario
-//					idTavoliDisponibili.add(p.getId());
-//				}
-//			} else if (p.getNumeroPersone() >= numeroPersone) { // non nella stessa data
-//				idTavoliDisponibili.add(p.getId());
-//			}
-//		}
+		ArrayList<Tavolo> tavoliDisponibili = new ArrayList<>();
 		
+		for (int id : idTavoliDisponibili) {
+			for (Tavolo tavolo : tavoli) {
+				if(id == tavolo.getId()) {
+					tavoliDisponibili.add(tavolo);
+				}
+			}
+		}
 		
-
-		// check data
-//		for (
-//		Prenotazione p : prenotazioni) { // cerco quelli non già in quella data
-//			if (!p.getData().equals(data)) {
-//				idTavoliDisponibili.add(p.getIdTavolo());
-//			}
-//		}
-
-		// check orario
-//		for (Prenotazione p : prenotazioni) { // cerco quelli non già in quell'orario
-//			if (!p.getOrario().equals(orario)) {
-//				idTavoliDisponibili.add(p.getIdTavolo());
-//			}
-//		}
-
-		// check numeroPersone
-//		for (Tavolo tavolo : tavoli) { // se il tavolo ha effettivamente posto per quelle persone
-//			if (tavolo.getNumeroPosti() >= numeroPersone) {
-//				idTavoliDisponibili.add(tavolo.getId());
-//			}
-//		}
-
-//		// check numeroPersone
-//		for (Prenotazione p : prenotazioni) {
-//			if (p.getNumeroPersone() >= numeroPersone) {
-//				idTavoliDisponibili.remove(p.getId());
-//			}
-//		}
+		this.setTavoliDisponibili(tavoliDisponibili);
+		
+		System.out.println(tavoliDisponibili);
 
 	}
 
@@ -154,4 +148,16 @@ public class Ristorante implements PrenotazioneService {
 		this.tavoli = tavoli;
 	}
 
+	public HashMap<Integer, ArrayList<Prenotazione>> getPrenotazioni() {
+		return prenotazioni;
+	}
+
+	public void setPrenotazioni(HashMap<Integer, ArrayList<Prenotazione>> prenotazioni) {
+		this.prenotazioni = prenotazioni;
+	}
+
+	public void setTavoliDisponibili(ArrayList<Tavolo> tavoliDisponibili) {
+		this.tavoliDisponibili = tavoliDisponibili;
+	}
+	
 }

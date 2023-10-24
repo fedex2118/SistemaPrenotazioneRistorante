@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import service.PrenotazioneService;
@@ -12,7 +13,8 @@ public class Ristorante implements PrenotazioneService {
 
 	public ArrayList<Tavolo> tavoli = new ArrayList<>();
 
-	public ArrayList<Prenotazione> prenotazioni = new ArrayList<>();
+	// key tavoloID: [p1, p2, p3]
+	public HashMap<Integer, ArrayList<Prenotazione>> prenotazioni = new HashMap<>();
 
 	/**
 	 * Metodo per aggiungere tavoli al ristorante.
@@ -69,6 +71,21 @@ public class Ristorante implements PrenotazioneService {
 			// sono disponibili tutti i tavoli!
 		}
 		HashSet<Integer> idTavoliDisponibili = new HashSet<>();
+		
+//		ArrayList<Integer> checkDisponibilita = new ArrayList<>();
+		
+		for(int tavoloId : prenotazioni.keySet()) {
+			for(Prenotazione p : prenotazioni.get(tavoloId)) {
+				if(p.getData().equals(data)) {
+					if(p.getOrario().equals(orario)) {
+//						checkDisponibilita = false;
+					}
+					else if(p.getNumeroPersone() >= numeroPersone) {
+//						checkDisponibilita = true;
+					}
+				}
+			}
+		}
 
 //		for (Tavolo tavolo : tavoli) { // tutti i tavoli disponibili
 //			idTavoliDisponibili.add(tavolo.getId());
@@ -98,33 +115,33 @@ public class Ristorante implements PrenotazioneService {
 		
 
 		// check data
-		for (
-		Prenotazione p : prenotazioni) { // cerco quelli non già in quella data
-			if (!p.getData().equals(data)) {
-				idTavoliDisponibili.add(p.getIdTavolo());
-			}
-		}
+//		for (
+//		Prenotazione p : prenotazioni) { // cerco quelli non già in quella data
+//			if (!p.getData().equals(data)) {
+//				idTavoliDisponibili.add(p.getIdTavolo());
+//			}
+//		}
 
 		// check orario
-		for (Prenotazione p : prenotazioni) { // cerco quelli non già in quell'orario
-			if (!p.getOrario().equals(orario)) {
-				idTavoliDisponibili.add(p.getIdTavolo());
-			}
-		}
+//		for (Prenotazione p : prenotazioni) { // cerco quelli non già in quell'orario
+//			if (!p.getOrario().equals(orario)) {
+//				idTavoliDisponibili.add(p.getIdTavolo());
+//			}
+//		}
 
 		// check numeroPersone
-		for (Tavolo tavolo : tavoli) { // se il tavolo ha effettivamente posto per quelle persone
-			if (tavolo.getNumeroPosti() >= numeroPersone) {
-				idTavoliDisponibili.add(tavolo.getId());
-			}
-		}
+//		for (Tavolo tavolo : tavoli) { // se il tavolo ha effettivamente posto per quelle persone
+//			if (tavolo.getNumeroPosti() >= numeroPersone) {
+//				idTavoliDisponibili.add(tavolo.getId());
+//			}
+//		}
 
-		// check numeroPersone
-		for (Prenotazione p : prenotazioni) {
-			if (p.getNumeroPersone() >= numeroPersone) {
-				idTavoliDisponibili.remove(p.getId());
-			}
-		}
+//		// check numeroPersone
+//		for (Prenotazione p : prenotazioni) {
+//			if (p.getNumeroPersone() >= numeroPersone) {
+//				idTavoliDisponibili.remove(p.getId());
+//			}
+//		}
 
 	}
 
